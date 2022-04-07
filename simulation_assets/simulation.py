@@ -39,8 +39,5 @@ def simulation():
             print("Current status: ", device_api.getStatus())
             sleep(1)
     except KeyboardInterrupt:
-        device_api.stop()
         print("simulation is finished")
-        
-    if device_api.thread.is_alive():
-        device_api.stop()
+
