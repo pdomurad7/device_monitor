@@ -10,8 +10,15 @@ class FakeDevice(Device):
     
     def get_results(self):
         with open(self.file_path) as f:
-            return json.load(f)
-
+            f_dict = json.load(f)
+            ret_dict = {}
+            for value in self.measurements:
+                if value in f_dict:
+                    ret_dict[value]=f_dict[value]
+                else:
+                    raise ValueError("Expected measurement doesn't exist")
+            return ret_dict
+            
 config1 = {
     'ID' : '1',
     'measurements': ['voltage', 'current'],
@@ -22,6 +29,7 @@ config2 = {
     'measurements': ['voltage', 'current'],
     'file_path': 'simulation_assets/resources/device2.json'
 }
+
 
 def simulation():
     device_api = DeviceMonitor()
@@ -39,5 +47,8 @@ def simulation():
             print("Current status: ", device_api.getStatus())
             sleep(1)
     except KeyboardInterrupt:
+        device_api.stop()
         print("simulation is finished")
-
+        
+    if device_api.thread.is_alive():
+        device_api.stop()
